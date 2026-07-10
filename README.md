@@ -1,56 +1,144 @@
 # Settlement & Reconciliation Exception Agent
 
-A self-initiated project for detecting and investigating settlement reconciliation exceptions using synthetic financial data.
+This is a self-initiated fintech analytics project that simulates merchant
+settlement reconciliation using synthetic order, payment, refund, fee, GST,
+settlement, and payout data.
 
-## Overview
+The project calculates the expected settlement amount for each merchant, compares
+it with the actual simulated settlement amount, flags exceptions, and generates
+short investigation memos with likely reasons such as refund adjustment, fee
+deduction, chargeback, failed capture, GST difference, or settlement delay.
 
-This system generates realistic synthetic order, payment, refund, fee, GST, settlement, and payout data, then calculates expected settlement amounts for each merchant and compares them with actual simulated settlements to identify mismatches. When exceptions are found, the system generates detailed investigation memos explaining possible root causes.
+## Business Problem
 
-## Features
+Payment companies, banks, and marketplaces process thousands of merchant
+transactions every day. At settlement time, the amount paid to the merchant must
+match what the business expects after deducting refunds, chargebacks, fees, and
+GST.
 
-- **Synthetic Data Generation**: Realistic e-commerce transaction data with controlled exception injection
-- **Expected Settlement Calculation**: Platform fees, PG fees, GST, refunds, chargebacks
-- **Automated Reconciliation**: Tolerance-based exception detection with severity classification
-- **Investigation Memos**: Auto-generated root cause analysis and actionable recommendations
-- **Interactive Dashboard**: Plotly-based HTML dashboard (no server required)
-- **Pattern Detection**: Identifies recurring issues and merchant risk profiles
-- **Comprehensive Testing**: Unit tests for all core components
+Manual reconciliation is slow and error-prone. This project shows how a rule
+based exception agent can automate the first level of reconciliation review.
 
+## What The Project Demonstrates
 
-## Dashboard Features
+- Synthetic data generation for fintech settlement workflows
+- Expected settlement calculation using auditable business rules
+- Merchant-level exception detection
+- Root-cause style classification for operational investigation
+- Auto-generated investigation memos
+- Streamlit dashboard for recruiter review
+- Static HTML dashboard that can be opened without running a server
+- Unit tests for the reconciliation formula
 
-The interactive dashboard includes 9 visualizations:
+## Folder Structure
 
-1. **KPI Overview** - Total exceptions with delta indicator
-2. **Severity Distribution** - Pie chart of HIGH/MEDIUM/LOW breakdown
-3. **Exception Type Breakdown** - Bar chart by exception category
-4. **Daily Exception Trend** - Time series of exception counts
-5. **Merchant Risk Heatmap** - Discrepancy intensity by merchant and date
-6. **Discrepancy Distribution** - Histogram of difference amounts
-7. **Expected vs Actual** - Scatter plot with perfect-match reference line
-8. **Exception Timeline** - Cumulative count over time
-9. **Top Affected Merchants** - Horizontal bar chart by total discrepancy
+```text
+settlement-reconciliation-exception-agent/
+|-- app.py
+|-- run_pipeline.py
+|-- requirements.txt
+|-- data/
+|   |-- raw/
+|   |-- processed/
+|-- dashboard/
+|   |-- static_dashboard.html
+|-- docs/
+|   |-- business_rules.md
+|-- src/
+|   |-- generate_synthetic_data.py
+|   |-- reconciliation_engine.py
+|   |-- build_static_dashboard.py
+|-- tests/
+|   |-- test_reconciliation_engine.py
+```
 
-## Testing
+## Reconciliation Logic
 
-The test suite covers:
-- Configuration validation
-- Data generation correctness
-- Reconciliation tolerance logic
-- Severity classification
-- Investigation memo generation
-- Recommendation logic
-- Empty dataframe handling
-- Pattern detection
-- Full pipeline integration
+```text
+expected_settlement =
+    captured_payments
+  - successful_refunds
+  - chargebacks
+  - platform_fees
+  - gateway_fees
+  - GST_on_fees
+```
 
+```text
+variance = actual_settlement - expected_settlement
+```
 
-## Author
+An exception is raised when the absolute variance is more than INR 5.00.
 
-Built a project to demonstrate:
-- Financial reconciliation automation
-- Data engineering pipeline design
-- Exception handling and root cause analysis
-- Interactive dashboard development
-- Software testing best practices
+## How To Run
+
+Create a virtual environment and install the requirements:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Generate the synthetic data and processed reconciliation outputs:
+
+```bash
+python run_pipeline.py
+```
+
+Run the dashboard:
+
+```bash
+streamlit run app.py
+```
+
+You can also open the offline dashboard directly:
+
+```text
+dashboard/static_dashboard.html
+```
+
+## Data Files
+
+Raw synthetic files:
+
+- `merchants.csv`
+- `orders.csv`
+- `payments.csv`
+- `refunds.csv`
+- `fees.csv`
+- `gst.csv`
+- `chargebacks.csv`
+- `settlements.csv`
+- `payouts.csv`
+
+Processed files:
+
+- `reconciliation_results.csv`
+- `exceptions.csv`
+- `merchant_summary.csv`
+
+## Interview Talking Points
+
+**Why did you build this?**  
+To show how my credit, banking, finance, and analytics background can be applied
+to fintech operations and GenAI-style workflow automation.
+
+**Why use synthetic data?**  
+Real payment and settlement data is confidential. Synthetic data lets me model
+the business workflow without exposing customer or merchant information.
+
+**Where can GenAI be added later?**  
+The current memo generator is rule based for auditability. A future version can
+use an LLM to draft richer investigation notes, summarize uploaded processor
+files, or answer analyst questions over reconciliation data.
+
+**What makes this useful for a business?**  
+It reduces manual checking, prioritizes high-risk exceptions, and gives an
+operations team a starting memo for investigation.
+
+## Disclaimer
+
+This is a portfolio project using fully synthetic data. It is not connected to
+any real bank, payment processor, customer, or merchant.
 
